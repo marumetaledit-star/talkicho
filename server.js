@@ -48,17 +48,27 @@ async function sendTelegramMessage(chatId, text) {
 }
 
 async function askAssistant(userMessage) {
-  const response = await ai.models.generateContent({
-    model: 'gemini-3.8-flash',
-    contents: userMessage,
-    config: {
-      systemInstruction: SYSTEM_PROMPT,
-      temperature: 0.3,
-      maxOutputTokens: 300,
-      thinkingConfig: { thinkingBudget: 0 }
+  const modelsToTry = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
+  let lastError;
+
+  for (const modelName of modelsToTry) {
+    try {
+      const response = await ai.models.generateContent({
+        model: modelName,
+        contents: userMessage,
+        config: {
+          systemInstruction: SYSTEM_PROMPT,
+          temperature: 0.3,
+          maxOutputTokens: 300
+        }
+      });
+      if (response.text) return response.text;
+    } catch (err) {
+      console.error(`Model ${modelName} failed:`, err.message || err);
+      lastError = err;
     }
-  });
-  return response.text || 'ይቅርታ፣ ትንሽ ቆይተው እንደገና ይሞክሩ። / Sorry, please try again shortly.';
+  }
+  throw lastError;
 }
 
 app.get('/', (req, res) => {
@@ -68,16 +78,15 @@ app.get('/', (req, res) => {
 app.post('/webhook/telegram', async (req, res) => {
   res.sendStatus(200);
 
+  const message = req.body?.message;
+  if (!message || !message.text) return;
+
+  const chatId = message.chat.id;
+  const text = message.text.trim();
+  const senderName = [message.from?.first_name, message.from?.last_name].filter(Boolean).join(' ') || 'Customer';
+  const username = message.from?.username ? `@${message.from.username}` : 'No username';
+
   try {
-    const message = req.body?.message;
-    if (!message || !message.text) return;
-
-    const chatId = message.chat.id;
-    const text = message.text.trim();
-    const senderName = [message.from?.first_name, message.from?.last_name].filter(Boolean).join(' ') || 'Customer';
-    const username = message.from?.username ? `@${message.from.username}` : 'No username';
-
-    // Immediately show "typing..." in Telegram
     sendTypingAction(chatId).catch(() => {});
 
     if (text === '/start') {
@@ -101,6 +110,10 @@ app.post('/webhook/telegram', async (req, res) => {
     await sendTelegramMessage(chatId, reply);
   } catch (err) {
     console.error('Webhook processing error:', err);
+    await sendTelegramMessage(
+      chatId,
+      'ይቅርታ፣ ሲስተሙ ላይ ትንሽ መቆራረጥ አጋጥሟል። እባክዎን ትንሽ ቆይተው እንደገና ይሞክሩ።\n\nSorry, there was a temporary connection issue. Please try again shortly.'
+    );
   }
 });
 
