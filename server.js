@@ -37,6 +37,10 @@ CORE DIVISIONS & SERVICES:
 4. Agriculture & Custom Manufacturing:
    - Agricultural equipment manufacturing and tailored industrial metal solutions.
 
+IMAGE & PHOTO ANALYSIS RULE:
+- When a customer sends a photo (such as a truck chassis, a cold room site, a trailer, a damaged part, or a technical drawing/sketch), carefully identify what is shown in the image and give helpful, practical engineering thoughts on how Maru Metal Industry PLC can build, repair, or customize a solution for it.
+- If the image is unclear or you need exact measurements/chassis specs to give a quote, politely ask for those details along with their Name and Phone Number.
+
 RULES:
 - Reply in the exact language the customer uses (Amharic if they write in Amharic, English if they write in English).
 - SPEED & BREVITY RULE: Keep answers direct, warm, and concise (2 to 4 sentences max unless listing divisions/contacts). Do not write long essays.
@@ -77,6 +81,22 @@ async function sendTelegramMessage(chatId, text, replyMarkup = null) {
   });
 }
 
+async function downloadTelegramPhotoAsBase64(fileId) {
+  const fileInfoRes = await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/getFile?file_id=${fileId}`);
+  const fileInfo = await fileInfoRes.json();
+  if (!fileInfo.ok || !fileInfo.result?.file_path) {
+    throw new Error('Could not retrieve Telegram file path');
+  }
+
+  const fileUrl = `https://api.telegram.org/file/bot${TELEGRAM_TOKEN}/${fileInfo.result.file_path}`;
+  const imageRes = await fetch(fileUrl);
+  const arrayBuffer = await imageRes.arrayBuffer();
+  const base64Data = Buffer.from(arrayBuffer).toString('base64');
+  const mimeType = fileInfo.result.file_path.endsWith('.png') ? 'image/png' : 'image/jpeg';
+
+  return { inlineData: { data: base64Data, mimeType } };
+}
+
 function getConversationContext(chatId, newMessage) {
   const history = chatHistory.get(chatId) || [];
   history.push(`Customer: ${newMessage}`);
@@ -92,8 +112,11 @@ function saveBotReply(chatId, botReply) {
   chatHistory.set(chatId, history);
 }
 
-async function askAssistant(chatId, userMessage) {
-  const conversationPrompt = getConversationContext(chatId, userMessage);
+async function askAssistant(chatId, userMessage, imagePart = null) {
+  const loggedText = imagePart ? `[Sent a photo] ${userMessage}` : userMessage;
+  const conversationPrompt = getConversationContext(chatId, loggedText);
+  const contents = imagePart ? [conversationPrompt, imagePart] : conversationPrompt;
+
   const modelsToTry = ['gemini-3.5-flash-lite', 'gemini-3.8-flash'];
   let lastError;
 
@@ -101,7 +124,7 @@ async function askAssistant(chatId, userMessage) {
     try {
       const response = await ai.models.generateContent({
         model: modelName,
-        contents: conversationPrompt,
+        contents,
         config: {
           systemInstruction: SYSTEM_PROMPT,
           temperature: 0.3,
@@ -128,21 +151,42 @@ app.post('/webhook/telegram', async (req, res) => {
   res.sendStatus(200);
 
   const message = req.body?.message;
-  if (!message || !message.text) return;
+  if (!message || (!message.text && !message.photo)) return;
 
   const chatId = message.chat.id;
-  const text = message.text.trim();
   const senderName = [message.from?.first_name, message.from?.last_name].filter(Boolean).join(' ') || 'Customer';
   const username = message.from?.username ? `@${message.from.username}` : 'No username';
 
   try {
     sendTypingAction(chatId).catch(() => {});
 
+    // Handle photo messages
+    if (message.photo && message.photo.length > 0) {
+      const bestPhoto = message.photo[message.photo.length - 1];
+      const caption = (message.caption || 'Please analyze this photo and let me know what Maru Metal Industry PLC can do for this.').trim();
+      const imagePart = await downloadTelegramPhotoAsBase64(bestPhoto.file_id);
+
+      let reply = await askAssistant(chatId, caption, imagePart);
+
+      if (reply.includes('[ESCALATE_LEAD]')) {
+        reply = reply.replace('[ESCALATE_LEAD]', '').trim();
+        if (OWNER_ID) {
+          const alertText = `🚨 Maru Metal — Customer Photo Lead\n\n👤 Customer: ${senderName} (${username})\n🆔 Chat ID: ${chatId}\n🖼️ Caption: "${caption}"`;
+          await sendTelegramMessage(OWNER_ID, alertText);
+        }
+      }
+
+      await sendTelegramMessage(chatId, reply, MAIN_MENU_KEYBOARD);
+      return;
+    }
+
+    const text = message.text.trim();
+
     if (text === '/start' || text === '/menu') {
       chatHistory.delete(chatId);
       await sendTelegramMessage(
         chatId,
-        'ሰላም! እንኳን ወደ ማሩ ሜታል ኢንዱስትሪ (Maru Metal Industry PLC) በደህና መጡ። ከ1967 ዓ.ም (1975) ጀምሮ ለ50 ዓመታት በጥራት ስናገለግል ቆይተናል።\n\nWelcome to Maru Metal Industry PLC — celebrating 50 years of precision engineering in Ethiopia! Choose a topic below or type your question in Amharic or English:',
+        'ሰላም! እንኳን ወደ ማሩ ሜታል ኢንዱስትሪ (Maru Metal Industry PLC) በደህና መጡ። ከ1967 ዓ.ም (1975) ጀምሮ ለ50 ዓመታት በጥራት ስናገለግል ቆይተናል።\n\nWelcome to Maru Metal Industry PLC — celebrating 50 years of precision engineering in Ethiopia! Choose a topic below, type your question, or send a photo of your truck/project in Amharic or English:',
         MAIN_MENU_KEYBOARD
       );
       return;
