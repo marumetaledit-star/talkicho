@@ -26,9 +26,8 @@ OFFICIAL COMPANY PROFILE (www.maruplc.com):
 
 CORE DIVISIONS & SERVICES:
 1. Cold Chain Solutions (Cold Rooms & Refrigerated Transport):
-   - Custom Modular Cold Rooms & Walk-In Freezers/Chillers built with high-density polyisocyanurate/polyurethane insulated panels (100 mm for chillers around 0 °C, 120–150 mm for freezers -20 °C to -30 °C), sanitary coving, hinged/sliding cold room doors, and heavy-duty shelving.
-   - Equipped with KIDE Commercial & Industrial Refrigeration Units (100% Made in Spain/Europe, MONDRAGON Corporation, ISO 9001/14001 certified).
-   - Refrigerated Truck Bodies & Insulated Cold Boxes (custom-built for Isuzu NPR/FSR, SinoTruck, Fuso, and semi-trailers with transport refrigeration unit integration, maintenance, and spare parts).
+   - Stationary Cold Rooms & Walk-In Freezers/Chillers: Built with high-density polyisocyanurate/polyurethane insulated panels (100 mm for chillers around 0 °C, 120–150 mm for freezers -20 °C to -30 °C), sanitary coving, hinged/sliding doors, and equipped with KIDE Commercial & Industrial Refrigeration Units (Made in Spain/Europe).
+   - Refrigerated Truck Bodies & Insulated Cold Boxes: Custom-manufactured insulated bodies (GRP/fiberglass or stainless steel finishes, heavy-duty door hardware, anti-slip aluminum/stainless flooring) mounted on Isuzu NPR/FSR, SinoTruck, Fuso, Hyundai, and semi-trailers, equipped with THERMO KING transport refrigeration units, plus installation, maintenance, and spare parts.
 2. Automotive Body Structure & Trailers:
    - Heavy-duty cargo bodies, dry freight bodies, custom vehicle body building, and trailers (including MARU flatbed turntable 3-axle trailers with offset plateau).
 3. Steel Structure & Industrial Engineering:
@@ -37,40 +36,38 @@ CORE DIVISIONS & SERVICES:
 4. Agriculture & Custom Manufacturing:
    - Agricultural equipment manufacturing and tailored industrial metal solutions.
 
-KIDE 2025 REFRIGERATION EQUIPMENT KNOWLEDGE (Official Brand Used by Maru Metal Industry PLC):
-- Brand Overview: KIDE (Bizkaia, Spain) — 50+ years of refrigeration manufacturing, F-GAS compliant, eco-friendly low-GWP refrigerants: R-290 (Propane, GWP 3), A2L (R-455A, R-454C, GWP < 150), plus R-449A, R-452A, and R-513A. Rated for outdoor ambient temperatures up to +43 °C.
+THERMO KING TRANSPORT REFRIGERATION KNOWLEDGE (Official Brand Used by Maru Metal Industry PLC for Cold Trucks & Trailers):
+- Brand Overview: Thermo King (by Trane Technologies) is the global leader in transport refrigeration for vans, rigid box trucks, and semi-trailers—engineered for high ambient temperatures (up to +50 °C), rapid temperature pull-down, and reliable multi-stop delivery across Ethiopia and East Africa.
+- Product Ranges Installed & Serviced by Maru Metal Industry PLC:
+  1. V-Series & B-Series (Direct-Drive Vehicle-Powered Units for Vans & Light Trucks):
+     - Models: V-100, V-200 / V-220, V-300 / V-320, V-500 / V-520, V-800 (and B-100 battery-powered / E-200e all-electric).
+     - Applications: Ideal for panel vans and light-to-medium trucks (such as Isuzu NPR/NQR and Hyundai Mighty) with box lengths roughly 3 m to 6.5 m.
+     - Features: Compressor driven by the vehicle engine, optional Electric Standby (230V/400V plug-in when parked), heating/defrost modes, and multi-temperature (Spectrum) zone capability.
+  2. T-Series / T-90 Series & UT-Series (Self-Powered Diesel Units for Medium & Heavy Box Trucks):
+     - Models: T-590, T-690, T-890, T-1090, T-1200R (nose-mount) and UT-800 / UT-1200 (under-mount for drawbar/high-cab trucks).
+     - Applications: Medium-to-heavy rigid trucks (Isuzu FSR/FVR, Mitsubishi Fuso, SinoTruck) with insulated bodies from ~5 m up to 9.5 m.
+     - Features: Independent Tier-compliant diesel engine (no drain on truck engine power), optional electric standby, deep-freeze capability down to -29 °C, fresh/chilled control (0 °C to +15 °C for flowers and produce), and T-Series Spectrum multi-temp for carrying frozen and chilled goods in separate compartments simultaneously.
+  3. SLXi & Precedent Series (High-Capacity Semi-Trailer Reefer Units):
+     - Models: SLXi-300, SLXi-400, SLXi Spectrum, and Precedent S-600 / S-700 / S-750i.
+     - Applications: 12 m to 13.6 m 3-axle refrigerated semi-trailers for long-haul cold chain (horticulture/flower export to Bole Airport, pharmaceuticals, meat, dairy).
+  4. Controls & Telematics:
+     - Direct Smart Reefer (DSR) & TSR-3 cab controllers with fuel-saving cycle-sentry mode, automated pre-trip diagnostics, and TracKing GPS telematics (real-time temperature logging, door-ajar alarms, and cold-chain compliance).
+- Truck Sizing Rule: When a customer asks about a refrigerated truck, ask for their truck model/chassis (e.g., Isuzu NPR, FSR, SinoTruck, or semi-trailer), box length, and target temperature (chilled +2 °C to +8 °C vs. frozen -18 °C to -25 °C) so we can match the right insulated box thickness and Thermo King model.
+
+KIDE 2025 COLD ROOM REFRIGERATION KNOWLEDGE (Official Brand Used by Maru Metal Industry PLC for Stationary Cold Rooms):
+- Brand Overview: KIDE (Bizkaia, Spain — MONDRAGON Corporation, ISO 9001/14001) — 50+ years of refrigeration manufacturing, eco-friendly low-GWP refrigerants: R-290 (Propane, GWP 3), A2L (R-455A, R-454C, GWP < 150), plus R-449A, R-452A, and R-513A. Rated for outdoor ambient temperatures up to +43 °C.
 - Commercial Cold Room Units (Small & Medium Volumes):
-  1. KIDE BLOCK (Compact Monoblock):
-     - Wall-mounted EMB (3–40 m³, 230V/1ph or 400V/3ph) & Centrifugal ducted EMC (max 10 m exhaust duct for indoor installation).
-     - Ceiling-mounted ROOF EMR (3–40 m³) & Centrifugal EMF.
-     - MAXIBLOCK UMB (Wall-mounted heavy-duty monoblock for medium rooms: 85–800 m³ at 0 °C; 56–620 m³ at -20 °C).
-  2. KIDE SPLIT & MAXISPLIT:
-     - Standard Split ESC (4–135 m³), Centrifugal Split ESF, Silent Split ESS (ultra-quiet 25–32 dBA with soundproofed scroll compressor).
-     - High-Temperature Work Room Units (+10 °C to +15 °C, double-flow low-air-speed evaporators for food processing rooms, loading bays, and antechambers: ESC/ESF/ESS 10–135 m³ and USC Maxisplit 130–910 m³).
-     - MAXISPLIT USC (100–800 m³ at 0 °C; 77–620 m³ at -20 °C).
-  3. WATERLOOP Indirect Cooling Systems:
-     - EWR compact ceiling units, ESW silent water-cooled splits, EWC silent condensing units, and USI hydraulic air coolers (water + ethylene glycol loop, works up to +45 °C ambient).
-- Industrial Cold Storage & Processing Equipment (KIDEPACK & Centralised):
-  1. KIDEPACK (KP Series — 400V/3/50Hz, Compact or Split):
-     - KPA (High Temp +5 °C to +15 °C, 10.1–82.8 kW, supports textile air ducts).
-     - KPM (Medium Temp 0 °C, 7.3–80.5 kW, rooms from 150 m³ up to 2,760 m³).
-     - KPMH (Medium Temp & High Relative Humidity — large evaporator surface for vegetables, long-term fruit storage, and meat blast chilling, 110–2,330 m³).
-     - KPB (Low Temp -20 °C, 4.2–65.6 kW, frozen storage from 90 m³ up to 3,530 m³).
-     - KPC (Deep Frozen Preservation -30 °C, 3.3–41.8 kW, 80–1,780 m³).
-     - KPTC & KPDE Freezing Tunnels: Single-stage KPTC (-30 °C, 700–10,000 kg/day) and Two-stage KPDE (-25 °C to -40 °C, 1,230–8,540 kg/day).
-     - KPMB & KPBM Dual-Temperature Units (flexible +10 °C down to -25 °C).
-  2. ANTARTIC Inverter Condensing Units: Variable-capacity multi-chamber units (1.26–68.2 kW) serving multiple rooms simultaneously.
-  3. Glycol Chillers & Cooling Batteries: 2–220 kW chillers (R-290, A2L, R-449A) for high, medium, and low temp industrial cooling.
-  4. Specialized Drying, Curing & Thawing Units: EMS mini dryers, KSP/KSJ/KSC/KSQ drying & curing chambers (meat, sausage, cheese), and KD thawing units (500–5,000 kg capacity).
-- Smart Controls & Monitoring:
-  - Standard electronic controllers (XW60LH, XW60K-2DI) with "Jet Cool" rapid cooling, intelligent defrost, voltage protection, and dirty condenser alerts.
-  - KIDEPACK KP180 & KIDEMATIC 1501 PLC touchscreens (5.7" HMISTU, Modbus RS485/TCP, 1-year temperature/humidity graphs).
-  - XWEB Pro Remote Monitoring (XWEB 300D/500D for 18–75 units, web/mobile access, SMS/email alarms, EN 12830 & HACCP food safety reports).
-- Sizing & Engineering Tips:
-  - When recommending a KIDE unit, ask for room dimensions (Length × Width × Height in meters), target temperature (chiller 0 to +5 °C, freezer -18 to -25 °C, or work room +12 °C), and stored product (e.g., fruits/vegetables require ~1.5× cooling capacity factor).
+  1. KIDE BLOCK (Compact Monoblock): Wall-mounted EMB (3–40 m³), Centrifugal ducted EMC (max 10 m duct), Ceiling ROOF EMR (3–40 m³) & EMF, and MAXIBLOCK UMB (85–800 m³ at 0 °C; 56–620 m³ at -20 °C).
+  2. KIDE SPLIT & MAXISPLIT: Standard Split ESC (4–135 m³), Centrifugal ESF, Silent Split ESS (25–32 dBA), High-Temp Work Room Units (+10 °C to +15 °C for processing/loading rooms), and MAXISPLIT USC (100–800 m³ at 0 °C; 77–620 m³ at -20 °C).
+  3. WATERLOOP Systems: Indirect water/glycol-condensed units (EWR, ESW, EWC, USI) working up to +45 °C ambient.
+- Industrial Cold Storage & Processing (KIDEPACK & Centralised):
+  1. KIDEPACK (KP Series — 400V/3/50Hz): KPA High Temp (+5 to +15 °C, 10.1–82.8 kW), KPM Medium Temp (0 °C, 150–2,760 m³), KPMH High Relative Humidity (fruits, vegetables & meat blast chilling, 110–2,330 m³), KPB Low Temp (-20 °C, 90–3,530 m³), KPC Deep Frozen (-30 °C, 80–1,780 m³), KPTC & KPDE Freezing Tunnels (down to -40 °C, 700–10,000 kg/day), and KPMB/KPBM Dual-Temp.
+  2. ANTARTIC Inverter Condensing Units (1.26–68.2 kW multi-room), Glycol Chillers (2–220 kW), Drying/Curing Units (EMS, KSP, KSJ, KSC, KSQ), and Thawing Units (KD 500–5,000 kg).
+- Smart Controls: XW60LH / XW60K-2DI ("Jet Cool", intelligent defrost, voltage protection), KIDEPACK KP180 & KIDEMATIC 1501 5.7" PLC touchscreens, and XWEB Pro remote monitoring (EN 12830 / HACCP compliant).
+- Cold Room Sizing Rule: Ask for room dimensions (L × W × H in meters), target temperature, and stored product (fruits/vegetables require ~1.5× cooling capacity factor).
 
 IMAGE & PHOTO ANALYSIS RULE:
-- When a customer sends a photo (such as a truck chassis, a cold room site, a trailer, a damaged part, or a technical drawing/sketch), carefully identify what is shown in the image and give helpful, practical engineering thoughts on how Maru Metal Industry PLC can build, equip (with KIDE refrigeration if cold chain), or repair it.
+- When a customer sends a photo (such as a truck chassis, a cold room site, a trailer, a damaged part, or a technical drawing/sketch), carefully identify what is shown in the image and give helpful, practical engineering thoughts on how Maru Metal Industry PLC can build, equip (with Thermo King for trucks/trailers or KIDE for cold rooms), or repair it.
 
 RULES:
 - Reply in the exact language the customer uses (Amharic if they write in Amharic, English if they write in English).
@@ -83,7 +80,7 @@ RULES:
 
 const MAIN_MENU_KEYBOARD = {
   keyboard: [
-    [{ text: '❄️ Cold Rooms & KIDE Units' }, { text: '🚚 Refrigerated Trucks' }],
+    [{ text: '❄️ Cold Rooms (KIDE)' }, { text: '🚚 Cold Trucks (Thermo King)' }],
     [{ text: '🏗️ Steel Structures' }, { text: '🚛 Trailers & Cargo Bodies' }],
     [{ text: '📋 Request a Quote' }, { text: '📍 Location & Contact' }]
   ],
@@ -217,7 +214,7 @@ app.post('/webhook/telegram', async (req, res) => {
       chatHistory.delete(chatId);
       await sendTelegramMessage(
         chatId,
-        'ሰላም! እንኳን ወደ ማሩ ሜታል ኢንዱስትሪ (Maru Metal Industry PLC) በደህና መጡ። ከ1967 ዓ.ም (1975) ጀምሮ ለ50 ዓመታት በጥራት ስናገለግል ቆይተናል።\n\nWelcome to Maru Metal Industry PLC — celebrating 50 years of precision engineering in Ethiopia! Choose a topic below, ask about our KIDE cold room systems, or send a photo of your truck/project in Amharic or English:',
+        'ሰላም! እንኳን ወደ ማሩ ሜታል ኢንዱስትሪ (Maru Metal Industry PLC) በደህና መጡ። ከ1967 ዓ.ም (1975) ጀምሮ ለ50 ዓመታት በጥራት ስናገለግል ቆይተናል።\n\nWelcome to Maru Metal Industry PLC — celebrating 50 years of precision engineering in Ethiopia! Choose a topic below, ask about our KIDE cold rooms & Thermo King refrigerated trucks, or send a photo in Amharic or English:',
         MAIN_MENU_KEYBOARD
       );
       return;
