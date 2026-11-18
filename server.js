@@ -21,6 +21,11 @@ const MARKETING_CONTACT_CARD =
 
 const SYSTEM_PROMPT = `You are the official bilingual (Amharic and English) AI sales and technical engineering assistant for Maru Metal Industry PLC (ማሩ ሜታል ኢንዱስትሪ ኃ.የተ.የግ.ማ) in Addis Ababa, Ethiopia ("Engineered for Reliability. Built for Africa").
 
+CONVERSATIONAL FLOW & GREETING RULE (STRICT):
+- NEVER repeat "Welcome to Maru Metal Industry PLC", "ሰላም! እንኳን ደህና መጡ", or formal introductory greetings in ongoing replies.
+- The /start message already welcomed the user. In normal replies, respond naturally like a helpful human engineer/sales colleague—jump straight into answering their question or continuing the conversation smoothly.
+- Only give a brief, warm greeting if the conversation history is completely empty AND the customer's first message is just "Hi", "Hello", or "ሰላም".
+
 CRITICAL NEGATIVE CONSTRAINT:
 - NEVER write phone numbers, email addresses, website URLs, street addresses, or staff names (including Luya Abebe) in your responses. The server handles contact cards automatically when needed. Focus 100% on answering the customer's technical or product question cleanly.
 
@@ -79,7 +84,7 @@ IMAGE & PHOTO ANALYSIS RULE:
 
 RULES:
 - Reply in the exact language the customer uses (Amharic if they write in Amharic, English if they write in English).
-- SPEED & BREVITY RULE: Keep answers direct, warm, and concise (2 to 5 sentences max unless listing specs). Do not write long essays.
+- SPEED & BREVITY RULE: Keep answers direct, warm, and concise (2 to 4 sentences max unless listing specs). Speak naturally like a knowledgeable colleague, not a scripted robot.
 - FORMATTING RULE: Never use Markdown asterisks (** or *), hashtags (#), or raw formatting symbols. Write in clean plain text using simple line breaks or numbered lists (1., 2., 3.).
 - Never invent specific prices, exact delivery timelines, or unverified specs.
 - LEAD & QUOTE COLLECTION RULE:
@@ -226,11 +231,11 @@ app.post('/webhook/telegram', async (req, res) => {
 
     if (text === '/start' || text === '/menu') {
       chatHistory.delete(chatId);
-      await sendTelegramMessage(
-        chatId,
-        'ሰላም! እንኳን ወደ ማሩ ሜታል ኢንዱስትሪ (Maru Metal Industry PLC) በደህና መጡ። ከ1967 ዓ.ም (1975) ጀምሮ ለ50 ዓመታት በጥራት ስናገለግል ቆይተናል።\n\nWelcome to Maru Metal Industry PLC — celebrating 50 years of precision engineering in Ethiopia! Choose a topic below, ask about our cold rooms & Thermo King refrigerated trucks, or send a photo in Amharic or English:',
-        MAIN_MENU_KEYBOARD
-      );
+      const welcomeMsg =
+        'ሰላም! እንኳን ወደ ማሩ ሜታል ኢንዱስትሪ (Maru Metal Industry PLC) በደህና መጡ። ከ1967 ዓ.ም (1975) ጀምሮ ለ50 ዓመታት በጥራት ስናገለግል ቆይተናል።\n\n' +
+        'Welcome to Maru Metal Industry PLC — celebrating 50 years of precision engineering in Ethiopia! Choose a topic below, ask about our cold rooms & Thermo King refrigerated trucks, or send a photo in Amharic or English:';
+      saveBotReply(chatId, welcomeMsg);
+      await sendTelegramMessage(chatId, welcomeMsg, MAIN_MENU_KEYBOARD);
       return;
     }
 
