@@ -21,13 +21,22 @@ const MARKETING_CONTACT_CARD =
 
 const SYSTEM_PROMPT = `You are the official bilingual (Amharic and English) AI sales and technical engineering assistant for Maru Metal Industry PLC (ማሩ ሜታል ኢንዱስትሪ ኃ.የተ.የግ.ማ) in Addis Ababa, Ethiopia ("Engineered for Reliability. Built for Africa").
 
+LANGUAGE QUALITY & SPELLING RULE (STRICT):
+- Write in clean, natural, well-structured language with zero spelling or grammar mistakes in both English and Amharic.
+- When replying in Amharic, use authentic, natural Ethiopian Amharic phrasing and accurate Fidel spelling (e.g., ቀዝቃዛ መጋዘን for cold room, ፍሪጅ ያለው የጭነት መኪና for refrigerated truck, የብረት ግንባታ for steel structure, ዋጋ / ኮቴሽን for quotation). Avoid awkward literal word-for-word translations from English.
+- Keep sentences clear, well-paced, and easy to read.
+
+FRIENDLY CONVERSATION & SMALL TALK RULE:
+- Be warm, personable, and enjoyable to talk to. Customers often bring up random everyday topics, jokes, Addis Ababa weather/traffic, coffee, or casual banter—engage with them naturally, politely, and with light, friendly humor like a real human colleague.
+- After enjoying a brief casual exchange, naturally leave the door open to help whenever they are ready (for example, asking how their business is going or if they have any cold room, refrigerated truck, or steel projects in mind) without sounding pushy or robotic.
+
 CONVERSATIONAL FLOW & GREETING RULE (STRICT):
 - NEVER repeat "Welcome to Maru Metal Industry PLC", "ሰላም! እንኳን ደህና መጡ", or formal introductory greetings in ongoing replies.
-- The /start message already welcomed the user. In normal replies, respond naturally like a helpful human engineer/sales colleague—jump straight into answering their question or continuing the conversation smoothly.
-- Only give a brief, warm greeting if the conversation history is completely empty AND the customer's first message is just "Hi", "Hello", or "ሰላም".
+- The /start message already welcomed the user. In normal replies, jump straight into the conversation naturally.
+- Only give a brief, friendly greeting if the conversation history is completely empty AND the customer's first message is just "Hi", "Hello", or "ሰላም".
 
 CRITICAL NEGATIVE CONSTRAINT:
-- NEVER write phone numbers, email addresses, website URLs, street addresses, or staff names (including Luya Abebe) in your responses. The server handles contact cards automatically when needed. Focus 100% on answering the customer's technical or product question cleanly.
+- NEVER write phone numbers, email addresses, website URLs, street addresses, or staff names (including Luya Abebe) in your responses. The server handles contact cards automatically when needed.
 
 OFFICIAL COMPANY PROFILE:
 - Heritage: Established in 1975 by CEO/Founder Dr. Maru Tefera, celebrating over 50 years of precision engineering and manufacturing excellence in Ethiopia.
@@ -159,7 +168,6 @@ async function downloadTelegramFileAsBase64(fileId, fallbackMime) {
   return { inlineData: { data: base64Data, mimeType } };
 }
 
-// Wraps raw 16-bit 24kHz mono PCM returned by Gemini TTS into a valid WAV file buffer
 function pcmToWavBuffer(pcmBuffer, sampleRate = 24000, numChannels = 1, bitsPerSample = 16) {
   const byteRate = (sampleRate * numChannels * bitsPerSample) / 8;
   const blockAlign = (numChannels * bitsPerSample) / 8;
@@ -171,7 +179,7 @@ function pcmToWavBuffer(pcmBuffer, sampleRate = 24000, numChannels = 1, bitsPerS
   header.write('WAVE', 8);
   header.write('fmt ', 12);
   header.writeUInt32LE(16, 16);
-  header.writeUInt16LE(1, 20); // PCM
+  header.writeUInt16LE(1, 20);
   header.writeUInt16LE(numChannels, 22);
   header.writeUInt32LE(sampleRate, 24);
   header.writeUInt32LE(byteRate, 28);
@@ -189,7 +197,7 @@ async function generateGeminiVoice(textToSpeak) {
     try {
       const response = await ai.models.generateContent({
         model: modelName,
-        contents: `Read the following message aloud naturally, warmly, and clearly in the exact language it is written in (Amharic or English):\n\n${textToSpeak}`,
+        contents: `Read the following message aloud naturally, warmly, and clearly in the exact language it is written in (Amharic or English), with proper pronunciation:\n\n${textToSpeak}`,
         config: {
           responseModalities: ['AUDIO'],
           speechConfig: {
@@ -236,7 +244,8 @@ async function askAssistant(chatId, userMessage, mediaPart = null, mediaLabel = 
   const conversationPrompt = getConversationContext(chatId, loggedText);
   const contents = mediaPart ? [conversationPrompt, mediaPart] : conversationPrompt;
 
-  const modelsToTry = ['gemini-3.5-flash-lite', 'gemini-3.8-flash'];
+  // Prioritizes gemini-3.8-flash for cleaner Amharic & English spelling, with fast lite fallback
+  const modelsToTry = ['gemini-3.8-flash', 'gemini-3.5-flash-lite'];
   let lastError;
 
   for (const modelName of modelsToTry) {
@@ -246,7 +255,7 @@ async function askAssistant(chatId, userMessage, mediaPart = null, mediaLabel = 
         contents,
         config: {
           systemInstruction: SYSTEM_PROMPT,
-          temperature: 0.3,
+          temperature: 0.35,
           maxOutputTokens: 450
         }
       });
@@ -277,7 +286,7 @@ app.post('/webhook/telegram', async (req, res) => {
   const username = message.from?.username ? `@${message.from.username}` : 'No username';
 
   try {
-    // 1. Handle Voice / Audio messages (reply with voice + text transcript)
+    // 1. Handle Voice / Audio messages
     if (message.voice || message.audio) {
       sendChatAction(chatId, 'record_voice').catch(() => {});
       const audioObj = message.voice || message.audio;
@@ -285,7 +294,7 @@ app.post('/webhook/telegram', async (req, res) => {
 
       let reply = await askAssistant(
         chatId,
-        'Listen to this customer voice note and respond naturally in the same language they spoke.',
+        'Listen to this customer voice note and respond naturally in the exact same language they spoke.',
         audioPart,
         'Sent a voice note'
       );
@@ -342,8 +351,8 @@ app.post('/webhook/telegram', async (req, res) => {
     if (text === '/start' || text === '/menu') {
       chatHistory.delete(chatId);
       const welcomeMsg =
-        'ሰላም! እንኳን ወደ ማሩ ሜታል ኢንዱስትሪ (Maru Metal Industry PLC) በደህና መጡ። ከ1967 ዓ.ም (1975) ጀምሮ ለ50 ዓመታት በጥራት ስናገለግል ቆይተናል።\n\n' +
-        'Welcome to Maru Metal Industry PLC — celebrating 50 years of precision engineering in Ethiopia! Choose a topic below, send a voice note, or share a photo in Amharic or English:';
+        'ሰላም! እንኳን ወደ ማሩ ሜታል ኢንዱስትሪ ኃ.የተ.የግ.ማ (Maru Metal Industry PLC) በደህና መጡ። ከ1967 ዓ.ም (1975) ጀምሮ ለ50 ዓመታት በጥራት ስናገለግል ቆይተናል።\n\n' +
+        'Welcome to Maru Metal Industry PLC — celebrating 50 years of precision engineering in Ethiopia! Choose a topic below, chat with me anytime, send a voice note, or share a photo in Amharic or English:';
       saveBotReply(chatId, welcomeMsg);
       await sendTelegramMessage(chatId, welcomeMsg, MAIN_MENU_KEYBOARD);
       return;
