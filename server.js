@@ -22,9 +22,17 @@ const MARKETING_CONTACT_CARD =
 const SYSTEM_PROMPT = `You are the official bilingual (Amharic and English) AI sales and technical engineering assistant for Maru Metal Industry PLC (ማሩ ሜታል ኢንዱስትሪ ኃ.የተ.የግ.ማ) in Addis Ababa, Ethiopia ("Engineered for Reliability. Built for Africa").
 
 LANGUAGE QUALITY & SPELLING RULE (STRICT):
-- Write in clean, natural, well-structured language with zero spelling or grammar mistakes in both English and Amharic.
-- When replying in Amharic, use authentic, natural Ethiopian Amharic phrasing and accurate Fidel spelling (e.g., ቀዝቃዛ መጋዘን for cold room, ፍሪጅ ያለው የጭነት መኪና for refrigerated truck, የብረት ግንባታ for steel structure, ዋጋ / ኮቴሽን for quotation). Avoid awkward literal word-for-word translations from English.
-- Keep sentences clear, well-paced, and easy to read.
+- Write in clean, natural, well-structured language with zero spelling, Fidel, or grammar mistakes in both English and Amharic.
+- When replying in Amharic, use authentic, natural Ethiopian Amharic phrasing and accurate Fidel orthography:
+  * Cold room = ቀዝቃዛ መጋዘን
+  * Walk-in freezer = የማቀዝቀዣ ክፍል / ዲፕ ፍሪዘር
+  * Refrigerated truck = ፍሪጅ ያለው የጭነት መኪና
+  * Steel structure = የብረት ግንባታ
+  * Trailer / cargo body = ተሳቢ እና የጭነት አካል
+  * Price quote / quotation = የዋጋ ዝርዝር / ኮቴሽን
+  * Insulation panel = የሙቀት መከላከያ ፓነል
+- Never produce awkward word-for-word machine translations from English into Amharic. Write the way a polite, educated Ethiopian engineer or sales specialist speaks in Addis Ababa.
+- Keep sentences clear, well-structured, and easy to read (and easy to pronounce aloud when converted to voice).
 
 FRIENDLY CONVERSATION & SMALL TALK RULE:
 - Be warm, personable, and enjoyable to talk to. Customers often bring up random everyday topics, jokes, Addis Ababa weather/traffic, coffee, or casual banter—engage with them naturally, politely, and with light, friendly humor like a real human colleague.
@@ -192,17 +200,17 @@ function pcmToWavBuffer(pcmBuffer, sampleRate = 24000, numChannels = 1, bitsPerS
 }
 
 async function generateGeminiVoice(textToSpeak) {
-  const ttsModels = ['gemini-2.5-flash-preview-tts', 'gemini-3.5-flash'];
+  const ttsModels = ['gemini-3.8-flash-tts', 'gemini-3.8-flash-lite-tts', 'gemini-2.5-flash-preview-tts'];
   for (const modelName of ttsModels) {
     try {
       const response = await ai.models.generateContent({
         model: modelName,
-        contents: `Read the following message aloud naturally, warmly, and clearly in the exact language it is written in (Amharic or English), with proper pronunciation:\n\n${textToSpeak}`,
+        contents: textToSpeak,
         config: {
           responseModalities: ['AUDIO'],
           speechConfig: {
             voiceConfig: {
-              prebuiltVoiceConfig: { voiceName: 'Puck' }
+              prebuiltVoiceConfig: { voiceName: 'Achird' }
             }
           }
         }
@@ -211,7 +219,7 @@ async function generateGeminiVoice(textToSpeak) {
       const part = response.candidates?.[0]?.content?.parts?.find((p) => p.inlineData?.data);
       if (part) {
         const rawBuffer = Buffer.from(part.inlineData.data, 'base64');
-        const mime = part.inlineData.mimeType || 'audio/pcm';
+        const mime = part.inlineData.mimeType || 'audio/wav';
         if (mime.includes('pcm') || mime.includes('L16')) {
           return { buffer: pcmToWavBuffer(rawBuffer), mimeType: 'audio/wav' };
         }
@@ -286,7 +294,7 @@ app.post('/webhook/telegram', async (req, res) => {
   const username = message.from?.username ? `@${message.from.username}` : 'No username';
 
   try {
-    // 1. Handle Voice / Audio messages
+    // 1. Handle Voice / Audio messages (replies with a voice message + text transcript)
     if (message.voice || message.audio) {
       sendChatAction(chatId, 'record_voice').catch(() => {});
       const audioObj = message.voice || message.audio;
@@ -294,7 +302,7 @@ app.post('/webhook/telegram', async (req, res) => {
 
       let reply = await askAssistant(
         chatId,
-        'Listen to this customer voice note and respond naturally in the exact same language they spoke.',
+        'Listen carefully to this customer voice message and reply naturally in the exact same language they spoke, with accurate spelling and grammar.',
         audioPart,
         'Sent a voice note'
       );
@@ -351,7 +359,7 @@ app.post('/webhook/telegram', async (req, res) => {
     if (text === '/start' || text === '/menu') {
       chatHistory.delete(chatId);
       const welcomeMsg =
-        'ሰላም! እንኳን ወደ ማሩ ሜታል ኢንዱስትሪ ኃ.የተ.የግ.ማ (Maru Metal Industry PLC) በደህና መጡ። ከ1967 ዓ.ም (1975) ጀምሮ ለ50 ዓመታት በጥራት ስናገለግል ቆይተናል።\n\n' +
+        'ሰላም! እንኳን ወደ ማሩ ሜታል ኢንዱስትሪ ኃ.የተ.የግ.ማ (Maru Metal Industry PLC) በደህና መጡ። ከ1967 ዓ.ም ጀምሮ ለ50 ዓመታት በጥራት ስናገለግል ቆይተናል።\n\n' +
         'Welcome to Maru Metal Industry PLC — celebrating 50 years of precision engineering in Ethiopia! Choose a topic below, chat with me anytime, send a voice note, or share a photo in Amharic or English:';
       saveBotReply(chatId, welcomeMsg);
       await sendTelegramMessage(chatId, welcomeMsg, MAIN_MENU_KEYBOARD);
@@ -395,7 +403,7 @@ app.post('/webhook/telegram', async (req, res) => {
     console.error('Webhook processing error:', err);
     await sendTelegramMessage(
       chatId,
-      'ይቅርታ፣ ሲስተሙ ላይ ትንሽ መቆራረጥ አጋጥሟል። እባክዎን ትንሽ ቆይተው እንደገና ይሞክሩ።\n\nSorry, there was a temporary connection issue. Please try again shortly.'
+      'ይቅርታ፣ ሲስተሙ ላይ ትንሽ መቆራረጥ አጋጥሟል። እባክዎ ትንሽ ቆይተው እንደገና ይሞክሩ።\n\nSorry, there was a temporary connection issue. Please try again shortly.'
     );
   }
 });
