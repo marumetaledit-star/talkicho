@@ -79,11 +79,12 @@ THERMO KING TRANSPORT REFRIGERATION KNOWLEDGE (Official Brand Used by Maru Metal
      - Direct Smart Reefer (DSR) & TSR-3 cab controllers with fuel-saving cycle-sentry mode, automated pre-trip diagnostics, and TracKing GPS telematics (real-time temperature logging, door-ajar alarms, and cold-chain compliance).
 - Truck Sizing Rule: When a customer asks about a refrigerated truck, ask for their truck model/chassis (e.g., Isuzu NPR, FSR, SinoTruck, or semi-trailer), box length, and target temperature (chilled +2 °C to +8 °C vs. frozen -18 °C to -25 °C) so we can match the right insulated box thickness and Thermo King model.
 
-IMAGE & PHOTO ANALYSIS RULE:
-- When a customer sends a photo (such as a truck chassis, a cold room site, a trailer, a damaged part, or a technical drawing/sketch), carefully identify what is shown in the image and give helpful, practical engineering thoughts on how Maru Metal Industry PLC can build, equip (with Thermo King for trucks/trailers, or our custom cold room refrigeration systems for stationary storage—never naming any cold room OEM brand), or repair it.
+IMAGE & VOICE ANALYSIS RULE:
+- When a customer sends a photo, identify what is shown and give practical engineering thoughts on how Maru Metal Industry PLC can build, equip (with Thermo King for trucks/trailers, or our custom cold room refrigeration systems for stationary storage—never naming any cold room OEM brand), or repair it.
+- When a customer sends a voice message (in Amharic or English), listen carefully and reply naturally in the exact same language they spoke.
 
 RULES:
-- Reply in the exact language the customer uses (Amharic if they write in Amharic, English if they write in English).
+- Reply in the exact language the customer uses (Amharic if they write or speak in Amharic, English if they write or speak in English).
 - SPEED & BREVITY RULE: Keep answers direct, warm, and concise (2 to 4 sentences max unless listing specs). Speak naturally like a knowledgeable colleague, not a scripted robot.
 - FORMATTING RULE: Never use Markdown asterisks (** or *), hashtags (#), or raw formatting symbols. Write in clean plain text using simple line breaks or numbered lists (1., 2., 3.).
 - Never invent specific prices, exact delivery timelines, or unverified specs.
@@ -103,12 +104,12 @@ const MAIN_MENU_KEYBOARD = {
   one_time_keyboard: false
 };
 
-async function sendTypingAction(chatId) {
+async function sendChatAction(chatId, action = 'typing') {
   const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendChatAction`;
   await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: chatId, action: 'typing' })
+    body: JSON.stringify({ chat_id: chatId, action })
   });
 }
 
@@ -124,7 +125,21 @@ async function sendTelegramMessage(chatId, text, replyMarkup = null) {
   });
 }
 
-async function downloadTelegramPhotoAsBase64(fileId) {
+async function sendTelegramVoice(chatId, audioBuffer, mimeType = 'audio/wav') {
+  const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendVoice`;
+  const ext = mimeType.includes('ogg') ? 'ogg' : 'wav';
+  const formData = new FormData();
+  formData.append('chat_id', String(chatId));
+  formData.append('voice', new Blob([audioBuffer], { type: mimeType }), `reply.${ext}`);
+
+  const res = await fetch(url, { method: 'POST', body: formData });
+  const data = await res.json();
+  if (!data.ok) {
+    throw new Error(`Telegram sendVoice failed: ${JSON.stringify(data)}`);
+  }
+}
+
+async function downloadTelegramFileAsBase64(fileId, fallbackMime) {
   const fileInfoRes = await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/getFile?file_id=${fileId}`);
   const fileInfo = await fileInfoRes.json();
   if (!fileInfo.ok || !fileInfo.result?.file_path) {
@@ -132,12 +147,73 @@ async function downloadTelegramPhotoAsBase64(fileId) {
   }
 
   const fileUrl = `https://api.telegram.org/file/bot${TELEGRAM_TOKEN}/${fileInfo.result.file_path}`;
-  const imageRes = await fetch(fileUrl);
-  const arrayBuffer = await imageRes.arrayBuffer();
+  const fileRes = await fetch(fileUrl);
+  const arrayBuffer = await fileRes.arrayBuffer();
   const base64Data = Buffer.from(arrayBuffer).toString('base64');
-  const mimeType = fileInfo.result.file_path.endsWith('.png') ? 'image/png' : 'image/jpeg';
+
+  let mimeType = fallbackMime;
+  if (fileInfo.result.file_path.endsWith('.png')) mimeType = 'image/png';
+  else if (fileInfo.result.file_path.endsWith('.oga') || fileInfo.result.file_path.endsWith('.ogg')) mimeType = 'audio/ogg';
+  else if (fileInfo.result.file_path.endsWith('.mp3')) mimeType = 'audio/mpeg';
 
   return { inlineData: { data: base64Data, mimeType } };
+}
+
+// Wraps raw 16-bit 24kHz mono PCM returned by Gemini TTS into a valid WAV file buffer
+function pcmToWavBuffer(pcmBuffer, sampleRate = 24000, numChannels = 1, bitsPerSample = 16) {
+  const byteRate = (sampleRate * numChannels * bitsPerSample) / 8;
+  const blockAlign = (numChannels * bitsPerSample) / 8;
+  const dataSize = pcmBuffer.length;
+  const header = Buffer.alloc(44);
+
+  header.write('RIFF', 0);
+  header.writeUInt32LE(36 + dataSize, 4);
+  header.write('WAVE', 8);
+  header.write('fmt ', 12);
+  header.writeUInt32LE(16, 16);
+  header.writeUInt16LE(1, 20); // PCM
+  header.writeUInt16LE(numChannels, 22);
+  header.writeUInt32LE(sampleRate, 24);
+  header.writeUInt32LE(byteRate, 28);
+  header.writeUInt16LE(blockAlign, 32);
+  header.writeUInt16LE(bitsPerSample, 34);
+  header.write('data', 36);
+  header.writeUInt32LE(dataSize, 40);
+
+  return Buffer.concat([header, pcmBuffer]);
+}
+
+async function generateGeminiVoice(textToSpeak) {
+  const ttsModels = ['gemini-2.5-flash-preview-tts', 'gemini-3.5-flash'];
+  for (const modelName of ttsModels) {
+    try {
+      const response = await ai.models.generateContent({
+        model: modelName,
+        contents: `Read the following message aloud naturally, warmly, and clearly in the exact language it is written in (Amharic or English):\n\n${textToSpeak}`,
+        config: {
+          responseModalities: ['AUDIO'],
+          speechConfig: {
+            voiceConfig: {
+              prebuiltVoiceConfig: { voiceName: 'Puck' }
+            }
+          }
+        }
+      });
+
+      const part = response.candidates?.[0]?.content?.parts?.find((p) => p.inlineData?.data);
+      if (part) {
+        const rawBuffer = Buffer.from(part.inlineData.data, 'base64');
+        const mime = part.inlineData.mimeType || 'audio/pcm';
+        if (mime.includes('pcm') || mime.includes('L16')) {
+          return { buffer: pcmToWavBuffer(rawBuffer), mimeType: 'audio/wav' };
+        }
+        return { buffer: rawBuffer, mimeType: mime };
+      }
+    } catch (err) {
+      console.error(`TTS model ${modelName} failed:`, err.message || err);
+    }
+  }
+  return null;
 }
 
 function getConversationContext(chatId, newMessage) {
@@ -155,10 +231,10 @@ function saveBotReply(chatId, botReply) {
   chatHistory.set(chatId, history);
 }
 
-async function askAssistant(chatId, userMessage, imagePart = null) {
-  const loggedText = imagePart ? `[Sent a photo] ${userMessage}` : userMessage;
+async function askAssistant(chatId, userMessage, mediaPart = null, mediaLabel = '') {
+  const loggedText = mediaPart ? `[${mediaLabel}] ${userMessage}` : userMessage;
   const conversationPrompt = getConversationContext(chatId, loggedText);
-  const contents = imagePart ? [conversationPrompt, imagePart] : conversationPrompt;
+  const contents = mediaPart ? [conversationPrompt, mediaPart] : conversationPrompt;
 
   const modelsToTry = ['gemini-3.5-flash-lite', 'gemini-3.8-flash'];
   let lastError;
@@ -194,22 +270,55 @@ app.post('/webhook/telegram', async (req, res) => {
   res.sendStatus(200);
 
   const message = req.body?.message;
-  if (!message || (!message.text && !message.photo)) return;
+  if (!message || (!message.text && !message.photo && !message.voice && !message.audio)) return;
 
   const chatId = message.chat.id;
   const senderName = [message.from?.first_name, message.from?.last_name].filter(Boolean).join(' ') || 'Customer';
   const username = message.from?.username ? `@${message.from.username}` : 'No username';
 
   try {
-    sendTypingAction(chatId).catch(() => {});
+    // 1. Handle Voice / Audio messages (reply with voice + text transcript)
+    if (message.voice || message.audio) {
+      sendChatAction(chatId, 'record_voice').catch(() => {});
+      const audioObj = message.voice || message.audio;
+      const audioPart = await downloadTelegramFileAsBase64(audioObj.file_id, audioObj.mime_type || 'audio/ogg');
 
-    // Handle photo messages
+      let reply = await askAssistant(
+        chatId,
+        'Listen to this customer voice note and respond naturally in the same language they spoke.',
+        audioPart,
+        'Sent a voice note'
+      );
+
+      if (reply.includes('[SHOW_CONTACT]')) {
+        reply = reply.replace('[SHOW_CONTACT]', MARKETING_CONTACT_CARD).trim();
+      }
+
+      if (reply.includes('[ESCALATE_LEAD]')) {
+        reply = `${reply.replace('[ESCALATE_LEAD]', '').trim()}\n\n${MARKETING_CONTACT_CARD}`;
+        if (OWNER_ID) {
+          const alertText = `🚨 Maru Metal — Customer Voice Lead\n\n👤 Customer: ${senderName} (${username})\n🆔 Chat ID: ${chatId}\n🎤 Sent a voice message`;
+          await sendTelegramMessage(OWNER_ID, alertText);
+        }
+      }
+
+      const voiceAudio = await generateGeminiVoice(reply);
+      if (voiceAudio) {
+        await sendTelegramVoice(chatId, voiceAudio.buffer, voiceAudio.mimeType);
+      }
+      await sendTelegramMessage(chatId, reply, MAIN_MENU_KEYBOARD);
+      return;
+    }
+
+    sendChatAction(chatId, 'typing').catch(() => {});
+
+    // 2. Handle Photo messages
     if (message.photo && message.photo.length > 0) {
       const bestPhoto = message.photo[message.photo.length - 1];
       const caption = (message.caption || 'Please analyze this photo and let me know what Maru Metal Industry PLC can do for this.').trim();
-      const imagePart = await downloadTelegramPhotoAsBase64(bestPhoto.file_id);
+      const imagePart = await downloadTelegramFileAsBase64(bestPhoto.file_id, 'image/jpeg');
 
-      let reply = await askAssistant(chatId, caption, imagePart);
+      let reply = await askAssistant(chatId, caption, imagePart, 'Sent a photo');
 
       if (reply.includes('[SHOW_CONTACT]')) {
         reply = reply.replace('[SHOW_CONTACT]', MARKETING_CONTACT_CARD).trim();
@@ -227,13 +336,14 @@ app.post('/webhook/telegram', async (req, res) => {
       return;
     }
 
+    // 3. Handle Text messages
     const text = message.text.trim();
 
     if (text === '/start' || text === '/menu') {
       chatHistory.delete(chatId);
       const welcomeMsg =
         'ሰላም! እንኳን ወደ ማሩ ሜታል ኢንዱስትሪ (Maru Metal Industry PLC) በደህና መጡ። ከ1967 ዓ.ም (1975) ጀምሮ ለ50 ዓመታት በጥራት ስናገለግል ቆይተናል።\n\n' +
-        'Welcome to Maru Metal Industry PLC — celebrating 50 years of precision engineering in Ethiopia! Choose a topic below, ask about our cold rooms & Thermo King refrigerated trucks, or send a photo in Amharic or English:';
+        'Welcome to Maru Metal Industry PLC — celebrating 50 years of precision engineering in Ethiopia! Choose a topic below, send a voice note, or share a photo in Amharic or English:';
       saveBotReply(chatId, welcomeMsg);
       await sendTelegramMessage(chatId, welcomeMsg, MAIN_MENU_KEYBOARD);
       return;
