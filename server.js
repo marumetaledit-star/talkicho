@@ -7,10 +7,13 @@ app.use(express.json());
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const OWNER_ID = process.env.OWNER_TELEGRAM_ID;
+const OWNER_ID = String(process.env.OWNER_TELEGRAM_ID || '').trim();
 
-// Short-term in-memory chat history per customer (keeps last 6 messages)
+// Short-term AI context per customer (keeps last 6 turns for fast responses)
 const chatHistory = new Map();
+
+// Full customer CRM & transcript log for owner review
+const customerLogs = new Map();
 
 const MARKETING_CONTACT_CARD =
   'You are chatting with the official AI Assistant for Maru Metal Industry PLC.\n\n' +
@@ -120,6 +123,77 @@ const MAIN_MENU_KEYBOARD = {
   resize_keyboard: true,
   one_time_keyboard: false
 };
+
+// Automatically extracts phone numbers and emails shared by a customer
+function extractContactDetails(text) {
+  const phones = text.match(/(?:\+251|0)?9\d{8}|\+?\d[\d\s-]{7,14}\d/g) || [];
+  const emails = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || [];
+  return {
+    phones: [...new Set(phones.map((p) => p.trim()))],
+    emails: [...new Set(emails.map((e) => e.trim()))]
+  };
+}
+
+// Saves full transcript and contact info per customer
+function recordCustomerLog(chatId, senderName, username, role, text) {
+  const id = String(chatId);
+  if (OWNER_ID && id === OWNER_ID) return; // Don't log owner's own admin tests as customer leads
+
+  const existing = customerLogs.get(id) || {
+    chatId: id,
+    name: senderName,
+    username,
+    phones: [],
+    emails: [],
+    escalated: false,
+    lastActive: new Date().toISOString(),
+    messages: []
+  };
+
+  existing.name = senderName || existing.name;
+  existing.username = username || existing.username;
+  existing.lastActive = new Date().toLocaleString('en-GB', { timeZone: 'Africa/Addis_Ababa' });
+
+  if (role === 'Customer') {
+    const found = extractContactDetails(text);
+    for (const p of found.phones) {
+      if (!existing.phones.includes(p)) existing.phones.push(p);
+    }
+    for (const e of found.emails) {
+      if (!existing.emails.includes(e)) existing.emails.push(e);
+    }
+  }
+
+  existing.messages.push(`${role}: ${text}`);
+  if (existing.messages.length > 30) {
+    existing.messages.shift();
+  }
+
+  customerLogs.set(id, existing);
+}
+
+// Splits long transcripts into chunks under Telegram's 4096-character message limit
+async function sendLongTelegramMessage(chatId, fullText, replyMarkup = null) {
+  const MAX_LEN = 3800;
+  if (fullText.length <= MAX_LEN) {
+    await sendTelegramMessage(chatId, fullText, replyMarkup);
+    return;
+  }
+
+  const lines = fullText.split('\n');
+  let chunk = '';
+  for (const line of lines) {
+    if ((chunk + '\n' + line).length > MAX_LEN) {
+      await sendTelegramMessage(chatId, chunk.trim());
+      chunk = line;
+    } else {
+      chunk = chunk ? `${chunk}\n${line}` : line;
+    }
+  }
+  if (chunk.trim()) {
+    await sendTelegramMessage(chatId, chunk.trim(), replyMarkup);
+  }
+}
 
 async function sendChatAction(chatId, action = 'typing') {
   const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendChatAction`;
@@ -252,7 +326,6 @@ async function askAssistant(chatId, userMessage, mediaPart = null, mediaLabel = 
   const conversationPrompt = getConversationContext(chatId, loggedText);
   const contents = mediaPart ? [conversationPrompt, mediaPart] : conversationPrompt;
 
-  // Prioritizes gemini-3.8-flash for cleaner Amharic & English spelling, with fast lite fallback
   const modelsToTry = ['gemini-3.8-flash', 'gemini-3.5-flash-lite'];
   let lastError;
 
@@ -290,15 +363,88 @@ app.post('/webhook/telegram', async (req, res) => {
   if (!message || (!message.text && !message.photo && !message.voice && !message.audio)) return;
 
   const chatId = message.chat.id;
+  const isOwner = OWNER_ID && String(chatId) === OWNER_ID;
   const senderName = [message.from?.first_name, message.from?.last_name].filter(Boolean).join(' ') || 'Customer';
   const username = message.from?.username ? `@${message.from.username}` : 'No username';
 
   try {
-    // 1. Handle Voice / Audio messages (replies with a voice message + text transcript)
+    // =========================================================================
+    // PRIVATE OWNER ADMIN COMMANDS (Only works for OWNER_TELEGRAM_ID)
+    // =========================================================================
+    if (isOwner && message.text) {
+      const adminCmd = message.text.trim();
+
+      // View list of all customers and their contact details
+      if (adminCmd === '/leads') {
+        if (customerLogs.size === 0) {
+          await sendTelegramMessage(chatId, 'No customer conversations recorded yet since the last server restart.');
+          return;
+        }
+
+        let summary = `📊 Maru Metal — Customer Conversations (${customerLogs.size})\n\n`;
+        let index = 1;
+        for (const log of customerLogs.values()) {
+          const phoneStr = log.phones.length > 0 ? log.phones.join(', ') : 'Not shared yet';
+          const emailStr = log.emails.length > 0 ? log.emails.join(', ') : 'Not shared yet';
+          const status = log.escalated ? '🔥 Quote/Lead Requested' : '💬 Browsing/Chatting';
+          summary +=
+            `${index}. ${log.name} (${log.username})\n` +
+            `   ID: ${log.chatId}\n` +
+            `   Status: ${status}\n` +
+            `   Phone: ${phoneStr}\n` +
+            `   Email: ${emailStr}\n` +
+            `   Last Active: ${log.lastActive}\n` +
+            `   View Full Chat: /chat_${log.chatId}\n\n`;
+          index++;
+        }
+
+        await sendLongTelegramMessage(chatId, summary);
+        return;
+      }
+
+      // View full conversation transcript with a specific customer (/chat_12345 or /chat 12345)
+      if (adminCmd.startsWith('/chat')) {
+        const targetId = adminCmd.replace('/chat_', '').replace('/chat', '').trim();
+        const log = customerLogs.get(targetId);
+
+        if (!log) {
+          await sendTelegramMessage(chatId, `No conversation found for ID "${targetId}". Send /leads to see all active customer IDs.`);
+          return;
+        }
+
+        const phoneStr = log.phones.length > 0 ? log.phones.join(', ') : 'Not shared yet';
+        const emailStr = log.emails.length > 0 ? log.emails.join(', ') : 'Not shared yet';
+        const transcript =
+          `🗂️ Full Conversation Transcript\n\n` +
+          `👤 Customer: ${log.name} (${log.username})\n` +
+          `🆔 Chat ID: ${log.chatId}\n` +
+          `📞 Phone: ${phoneStr}\n` +
+          `📧 Email: ${emailStr}\n` +
+          `🕒 Last Active: ${log.lastActive}\n` +
+          `────────────────────\n` +
+          `${log.messages.join('\n\n')}`;
+
+        await sendLongTelegramMessage(chatId, transcript);
+        return;
+      }
+
+      // Clear stored customer logs
+      if (adminCmd === '/clearleads') {
+        customerLogs.clear();
+        await sendTelegramMessage(chatId, 'All stored customer conversation logs have been cleared.');
+        return;
+      }
+    }
+
+    // =========================================================================
+    // 1. Handle Voice / Audio messages
+    // =========================================================================
     if (message.voice || message.audio) {
       sendChatAction(chatId, 'record_voice').catch(() => {});
       const audioObj = message.voice || message.audio;
       const audioPart = await downloadTelegramFileAsBase64(audioObj.file_id, audioObj.mime_type || 'audio/ogg');
+
+      recordCustomerLog(chatId, senderName, username, 'Customer', '[Sent a voice message]');
 
       let reply = await askAssistant(
         chatId,
@@ -313,10 +459,23 @@ app.post('/webhook/telegram', async (req, res) => {
 
       if (reply.includes('[ESCALATE_LEAD]')) {
         reply = `${reply.replace('[ESCALATE_LEAD]', '').trim()}\n\n${MARKETING_CONTACT_CARD}`;
+        recordCustomerLog(chatId, senderName, username, 'Assistant', reply);
+        const log = customerLogs.get(String(chatId));
+        if (log) log.escalated = true;
+
         if (OWNER_ID) {
-          const alertText = `🚨 Maru Metal — Customer Voice Lead\n\n👤 Customer: ${senderName} (${username})\n🆔 Chat ID: ${chatId}\n🎤 Sent a voice message`;
-          await sendTelegramMessage(OWNER_ID, alertText);
+          const phoneStr = log?.phones?.length ? log.phones.join(', ') : 'Check transcript';
+          const fullTranscript = log ? log.messages.join('\n') : 'Sent a voice message';
+          const alertText =
+            `🚨 Maru Metal — Customer Voice Lead\n\n` +
+            `👤 Customer: ${senderName} (${username})\n` +
+            `🆔 Chat ID: ${chatId}\n` +
+            `📞 Detected Phone: ${phoneStr}\n\n` +
+            `💬 Full Conversation:\n${fullTranscript}`;
+          await sendLongTelegramMessage(OWNER_ID, alertText);
         }
+      } else {
+        recordCustomerLog(chatId, senderName, username, 'Assistant', reply);
       }
 
       const voiceAudio = await generateGeminiVoice(reply);
@@ -329,11 +488,15 @@ app.post('/webhook/telegram', async (req, res) => {
 
     sendChatAction(chatId, 'typing').catch(() => {});
 
+    // =========================================================================
     // 2. Handle Photo messages
+    // =========================================================================
     if (message.photo && message.photo.length > 0) {
       const bestPhoto = message.photo[message.photo.length - 1];
       const caption = (message.caption || 'Please analyze this photo and let me know what Maru Metal Industry PLC can do for this.').trim();
       const imagePart = await downloadTelegramFileAsBase64(bestPhoto.file_id, 'image/jpeg');
+
+      recordCustomerLog(chatId, senderName, username, 'Customer', `[Sent a photo] ${caption}`);
 
       let reply = await askAssistant(chatId, caption, imagePart, 'Sent a photo');
 
@@ -343,72 +506,37 @@ app.post('/webhook/telegram', async (req, res) => {
 
       if (reply.includes('[ESCALATE_LEAD]')) {
         reply = `${reply.replace('[ESCALATE_LEAD]', '').trim()}\n\n${MARKETING_CONTACT_CARD}`;
+        recordCustomerLog(chatId, senderName, username, 'Assistant', reply);
+        const log = customerLogs.get(String(chatId));
+        if (log) log.escalated = true;
+
         if (OWNER_ID) {
-          const alertText = `🚨 Maru Metal — Customer Photo Lead\n\n👤 Customer: ${senderName} (${username})\n🆔 Chat ID: ${chatId}\n🖼️ Caption: "${caption}"`;
-          await sendTelegramMessage(OWNER_ID, alertText);
+          const phoneStr = log?.phones?.length ? log.phones.join(', ') : 'Check transcript';
+          const fullTranscript = log ? log.messages.join('\n') : caption;
+          const alertText =
+            `🚨 Maru Metal — Customer Photo Lead\n\n` +
+            `👤 Customer: ${senderName} (${username})\n` +
+            `🆔 Chat ID: ${chatId}\n` +
+            `📞 Detected Phone: ${phoneStr}\n\n` +
+            `💬 Full Conversation:\n${fullTranscript}`;
+          await sendLongTelegramMessage(OWNER_ID, alertText);
         }
+      } else {
+        recordCustomerLog(chatId, senderName, username, 'Assistant', reply);
       }
 
       await sendTelegramMessage(chatId, reply, MAIN_MENU_KEYBOARD);
       return;
     }
 
+    // =========================================================================
     // 3. Handle Text messages
+    // =========================================================================
     const text = message.text.trim();
+    recordCustomerLog(chatId, senderName, username, 'Customer', text);
 
     if (text === '/start' || text === '/menu') {
       chatHistory.delete(chatId);
       const welcomeMsg =
         'ሰላም! እንኳን ወደ ማሩ ሜታል ኢንዱስትሪ ኃ.የተ.የግ.ማ (Maru Metal Industry PLC) በደህና መጡ። ከ1967 ዓ.ም ጀምሮ ለ50 ዓመታት በጥራት ስናገለግል ቆይተናል።\n\n' +
-        'Welcome to Maru Metal Industry PLC — celebrating 50 years of precision engineering in Ethiopia! Choose a topic below, chat with me anytime, send a voice note, or share a photo in Amharic or English:';
-      saveBotReply(chatId, welcomeMsg);
-      await sendTelegramMessage(chatId, welcomeMsg, MAIN_MENU_KEYBOARD);
-      return;
-    }
-
-    if (text === '📍 Location & Contact') {
-      await sendTelegramMessage(
-        chatId,
-        'Maru Metal Industry PLC — Addis Ababa, Ethiopia\n\n' +
-        'Marketing Contact: Luya Abebe (Marketing Department)\n' +
-        'Direct Phone: +251 911 858 889\n' +
-        'Direct Email: luyaabebe@maruplc.com\n\n' +
-        'Address: Woreda 05, Akaki/Kality Subcity (Facilities in Akaki/Kality & Kera)\n' +
-        'Working Hours: 09:00 AM – 05:00 PM\n' +
-        'Office Lines: +251 11 437 59 73 | +251 11 439 82 54 | +251 11 462 43 10 | +251 99 359 79 28\n' +
-        'General Email: info@maruplc.com\n' +
-        'Website: www.maruplc.com',
-        MAIN_MENU_KEYBOARD
-      );
-      return;
-    }
-
-    let reply = await askAssistant(chatId, text);
-
-    if (reply.includes('[SHOW_CONTACT]')) {
-      reply = reply.replace('[SHOW_CONTACT]', MARKETING_CONTACT_CARD).trim();
-    }
-
-    if (reply.includes('[ESCALATE_LEAD]')) {
-      reply = `${reply.replace('[ESCALATE_LEAD]', '').trim()}\n\n${MARKETING_CONTACT_CARD}`;
-      if (OWNER_ID) {
-        const recentChat = (chatHistory.get(chatId) || []).slice(-4).join('\n');
-        const alertText = `🚨 Maru Metal — New Customer Lead\n\n👤 Customer: ${senderName} (${username})\n🆔 Chat ID: ${chatId}\n\n💬 Recent Conversation:\n${recentChat}`;
-        await sendTelegramMessage(OWNER_ID, alertText);
-      }
-    }
-
-    await sendTelegramMessage(chatId, reply, MAIN_MENU_KEYBOARD);
-  } catch (err) {
-    console.error('Webhook processing error:', err);
-    await sendTelegramMessage(
-      chatId,
-      'ይቅርታ፣ ሲስተሙ ላይ ትንሽ መቆራረጥ አጋጥሟል። እባክዎ ትንሽ ቆይተው እንደገና ይሞክሩ።\n\nSorry, there was a temporary connection issue. Please try again shortly.'
-    );
-  }
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log('Maru Metal Industry PLC Assistant Server Live');
-});
+        'Welcome to Maru Metal Industry PLC — celebrating 50 years of precision
