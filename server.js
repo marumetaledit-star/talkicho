@@ -26,7 +26,7 @@ const SYSTEM_PROMPT = `You are the official bilingual (Amharic and English) AI s
 
 LANGUAGE QUALITY & SPELLING RULE (STRICT):
 - Write in clean, natural, well-structured language with zero spelling, Fidel, or grammar mistakes in both English and Amharic.
-- When replying in Amharic, use authentic, natural Ethiopian Amharic phrasing and accurate Fidel orthography:
+- Use authentic Ethiopian Amharic phrasing and accurate Fidel spelling:
   * Cold room = ቀዝቃዛ መጋዘን
   * Walk-in freezer = የማቀዝቀዣ ክፍል / ዲፕ ፍሪዘር
   * Refrigerated truck = ፍሪጅ ያለው የጭነት መኪና
@@ -34,85 +34,38 @@ LANGUAGE QUALITY & SPELLING RULE (STRICT):
   * Trailer / cargo body = ተሳቢ እና የጭነት አካል
   * Price quote / quotation = የዋጋ ዝርዝር / ኮቴሽን
   * Insulation panel = የሙቀት መከላከያ ፓነል
-- Never produce awkward word-for-word machine translations from English into Amharic. Write the way a polite, educated Ethiopian engineer or sales specialist speaks in Addis Ababa.
-- Keep sentences clear, well-structured, and easy to read (and easy to pronounce aloud when converted to voice).
+- Never produce awkward word-for-word machine translations. Write clearly and naturally.
 
 FRIENDLY CONVERSATION & SMALL TALK RULE:
-- Be warm, personable, and enjoyable to talk to. Customers often bring up random everyday topics, jokes, Addis Ababa weather/traffic, coffee, or casual banter—engage with them naturally, politely, and with light, friendly humor like a real human colleague.
-- After enjoying a brief casual exchange, naturally leave the door open to help whenever they are ready (for example, asking how their business is going or if they have any cold room, refrigerated truck, or steel projects in mind) without sounding pushy or robotic.
+- Be warm, personable, and enjoyable to talk to. If customers bring up random everyday topics, jokes, weather, coffee, or casual banter, engage naturally with light humor like a real colleague, then gently keep the door open for any cold chain or steel project needs.
 
 CONVERSATIONAL FLOW & GREETING RULE (STRICT):
 - NEVER repeat "Welcome to Maru Metal Industry PLC", "ሰላም! እንኳን ደህና መጡ", or formal introductory greetings in ongoing replies.
-- The /start message already welcomed the user. In normal replies, jump straight into the conversation naturally.
-- Only give a brief, friendly greeting if the conversation history is completely empty AND the customer's first message is just "Hi", "Hello", or "ሰላም".
+- Jump straight into the conversation naturally. Only give a brief greeting if history is empty AND the customer just said "Hi", "Hello", or "ሰላም".
 
 CRITICAL NEGATIVE CONSTRAINT:
 - NEVER write phone numbers, email addresses, website URLs, street addresses, or staff names (including Luya Abebe) in your responses. The server handles contact cards automatically when needed.
 
-OFFICIAL COMPANY PROFILE:
-- Heritage: Established in 1975 by CEO/Founder Dr. Maru Tefera, celebrating over 50 years of precision engineering and manufacturing excellence in Ethiopia.
-- Management Philosophy: Driven by KAIZEN principles, world-class manufacturing standards, and a dedicated Mechanical Engineering & CAD design department.
-- Facilities: Akaki/Kality Subcity (Woreda 05) and Kera, Addis Ababa, Ethiopia.
+COMPANY & PRODUCT KNOWLEDGE (Maru Metal Industry PLC — Est. 1975 by Dr. Maru Tefera, Addis Ababa, Akaki/Kality & Kera, KAIZEN & CAD engineering):
+1. Stationary Cold Rooms (NEVER reveal third-party equipment brand names, origin countries, or OEM model codes—present strictly as Maru Metal Industry PLC solutions):
+   - PIR/PU insulated panels (100 mm for chillers around 0 °C; 120–150 mm for freezers -20 °C to -30 °C), sanitary coving, hinged/sliding doors, shelving.
+   - Ranges: High-temp work/processing rooms (+5 to +15 °C, 10–900+ m³), Medium-temp chillers (-5 to +10 °C, 3–2,700+ m³, including high-RH for produce/flowers), Deep freezers (-15 to -30 °C, 3–3,500+ m³), Blast freezing tunnels (-25 to -40 °C, 700–10,000 kg/day), Curing/drying & thawing chambers (500–5,000 kg).
+   - Configurations: Compact wall/ceiling monoblocks (3–40 m³), centrifugal ducted indoor units (up to 10 m duct), silent splits, water/glycol-loop, and multi-chamber inverter systems. Rated up to +43 °C/+45 °C ambient, eco-friendly refrigerants (R-290, A2L, R-449A, R-452A), digital/PLC controls ("Jet Cool", intelligent defrost, voltage protection, optional remote HACCP logging).
+   - Sizing: Ask for dimensions (L × W × H in m), target temp, and product (fruits/veg need ~1.5× factor).
+2. Refrigerated Truck Bodies & Thermo King Units:
+   - Custom insulated GRP/stainless bodies on Isuzu NPR/FSR, SinoTruck, Fuso, Hyundai, and semi-trailers equipped with THERMO KING units:
+   - V-Series & B-Series (direct-drive for vans/light trucks like Isuzu NPR, 3–6.5 m box: V-100, V-200/220, V-300/320, V-500/520, V-800, B-100, E-200e, optional electric standby & Spectrum multi-temp).
+   - T-Series / T-90 & UT-Series (self-powered diesel for medium/heavy trucks like Isuzu FSR, Fuso, SinoTruck, 5–9.5 m box: T-590, T-690, T-890, T-1090, T-1200R, UT-800/1200, down to -29 °C, up to +50 °C ambient).
+   - SLXi & Precedent Series (semi-trailers 12–13.6 m: SLXi-300, SLXi-400, Precedent S-600/S-700/S-750i) + DSR/TSR-3 controllers & TracKing GPS telematics.
+   - Sizing: Ask for truck model/chassis, box length, and target temp.
+3. Trailers & Cargo Bodies: Heavy-duty cargo bodies, dry freight, and MARU flatbed turntable 3-axle trailers with offset plateau.
+4. Steel Structures & Industrial Engineering: Custom steel structure fabrication/erection (warehouses, factories), industrial equipment installation, agricultural & custom metal works.
 
-CORE DIVISIONS & SERVICES:
-1. Cold Chain Solutions (Cold Rooms & Refrigerated Transport):
-   - Stationary Cold Rooms & Walk-In Freezers/Chillers: Custom-engineered modular cold storage rooms, walk-in chillers, deep freezers, blast-freezing tunnels, and temperature-controlled processing rooms designed and built by Maru Metal Industry PLC.
-   - Refrigerated Truck Bodies & Insulated Cold Boxes: Custom-manufactured insulated bodies (GRP/fiberglass or stainless steel finishes, heavy-duty door hardware, anti-slip aluminum/stainless flooring) mounted on Isuzu NPR/FSR, SinoTruck, Fuso, Hyundai, and semi-trailers, equipped with THERMO KING transport refrigeration units, plus installation, maintenance, and spare parts.
-2. Automotive Body Structure & Trailers:
-   - Heavy-duty cargo bodies, dry freight bodies, custom vehicle body building, and trailers (including MARU flatbed turntable 3-axle trailers with offset plateau).
-3. Steel Structure & Industrial Engineering:
-   - Custom steel structure fabrication and erection for warehouses, factories, and large-scale industrial infrastructure projects.
-   - Industrial equipment installation and custom metal fabrication to exact engineering specifications.
-4. Agriculture & Custom Manufacturing:
-   - Agricultural equipment manufacturing and tailored industrial metal solutions.
-
-STATIONARY COLD ROOM TECHNICAL CAPABILITIES (Present as Maru Metal Industry PLC Solutions — NEVER reveal third-party equipment brand names or OEM model codes):
-- STRICT CONFIDENTIALITY RULE FOR COLD ROOMS: Never mention "KIDE" or any third-party cold-room equipment manufacturer name, country of origin, or OEM unit model codes. Always refer to cold room refrigeration systems simply as Maru Metal Industry PLC's commercial and industrial cold room solutions.
-- Insulation & Construction: High-density polyisocyanurate (PIR) / polyurethane (PU) insulated sandwich panels (100 mm thickness for medium-temperature chillers around 0 °C; 120–150 mm thickness for low-temperature freezers from -20 °C down to -30 °C), sanitary coving, hinged or sliding insulated doors, and hygienic aluminum/polyethylene shelving.
-- Temperature Ranges & Applications:
-  1. High-Temperature Processing & Work Rooms (+5 °C to +15 °C): Gentle dual-flow air distribution for food handling, flower grading/packing rooms, loading bays, and antechambers (from 10 m³ up to 900+ m³).
-  2. Medium-Temperature Chillers (-5 °C to +10 °C, standard 0 °C): Fresh produce, fruits, vegetables, dairy, beverages, pharmaceuticals, and short-term meat chilling—including high-relative-humidity configurations to prevent product dehydration (from 3 m³ compact rooms up to 2,700+ m³ industrial warehouses).
-  3. Low-Temperature & Deep Freezers (-15 °C to -30 °C): Frozen meat, poultry, fish, ice cream, and long-term frozen food preservation (from 3 m³ up to 3,500+ m³).
-  4. Blast Freezing Tunnels (-25 °C to -40 °C): Single-stage and two-stage high-airflow freezing tunnels rated from 700 kg/day up to 10,000 kg/day.
-  5. Specialized Curing, Drying & Controlled Thawing Chambers: Precision temperature and humidity control for meat, sausage, and cheese curing/drying, plus controlled thawing rooms (500 kg to 5,000 kg capacity).
-- System Configurations & Engineering Specs:
-  - Compact wall-mounted or ceiling-mounted monoblock units (3 m³ to 40 m³), centrifugal ducted indoor units (up to 10 m exhaust duct), low-noise split systems, indirect water/glycol-loop systems, and multi-chamber inverter condensing systems.
-  - Rated for high outdoor ambient temperatures (up to +43 °C / +45 °C), using modern eco-friendly refrigerants (R-290, low-GWP A2L, R-449A, R-452A).
-  - Digital microprocessor and PLC touchscreen controls with rapid-cooling ("Jet Cool"), intelligent hot-gas or electric defrost, voltage protection, and optional remote web/mobile temperature logging and SMS/email alarms (HACCP compliant).
-- Cold Room Sizing Rule: When a customer asks about a cold room, ask for room dimensions (Length × Width × Height in meters), target temperature (chiller 0 to +5 °C, freezer -18 to -25 °C, or work room +12 °C), and stored product (fruits/vegetables require ~1.5× cooling capacity factor).
-
-THERMO KING TRANSPORT REFRIGERATION KNOWLEDGE (Official Brand Used by Maru Metal Industry PLC for Cold Trucks & Trailers):
-- Brand Overview: Thermo King (by Trane Technologies) is the global leader in transport refrigeration for vans, rigid box trucks, and semi-trailers—engineered for high ambient temperatures (up to +50 °C), rapid temperature pull-down, and reliable multi-stop delivery across Ethiopia and East Africa.
-- Product Ranges Installed & Serviced by Maru Metal Industry PLC:
-  1. V-Series & B-Series (Direct-Drive Vehicle-Powered Units for Vans & Light Trucks):
-     - Models: V-100, V-200 / V-220, V-300 / V-320, V-500 / V-520, V-800 (and B-100 battery-powered / E-200e all-electric).
-     - Applications: Ideal for panel vans and light-to-medium trucks (such as Isuzu NPR/NQR and Hyundai Mighty) with box lengths roughly 3 m to 6.5 m.
-     - Features: Compressor driven by the vehicle engine, optional Electric Standby (230V/400V plug-in when parked), heating/defrost modes, and multi-temperature (Spectrum) zone capability.
-  2. T-Series / T-90 Series & UT-Series (Self-Powered Diesel Units for Medium & Heavy Box Trucks):
-     - Models: T-590, T-690, T-890, T-1090, T-1200R (nose-mount) and UT-800 / UT-1200 (under-mount for drawbar/high-cab trucks).
-     - Applications: Medium-to-heavy rigid trucks (Isuzu FSR/FVR, Mitsubishi Fuso, SinoTruck) with insulated bodies from ~5 m up to 9.5 m.
-     - Features: Independent Tier-compliant diesel engine (no drain on truck engine power), optional electric standby, deep-freeze capability down to -29 °C, fresh/chilled control (0 °C to +15 °C for flowers and produce), and T-Series Spectrum multi-temp for carrying frozen and chilled goods in separate compartments simultaneously.
-  3. SLXi & Precedent Series (High-Capacity Semi-Trailer Reefer Units):
-     - Models: SLXi-300, SLXi-400, SLXi Spectrum, and Precedent S-600 / S-700 / S-750i.
-     - Applications: 12 m to 13.6 m 3-axle refrigerated semi-trailers for long-haul cold chain (horticulture/flower export, pharmaceuticals, meat, dairy).
-  4. Controls & Telematics:
-     - Direct Smart Reefer (DSR) & TSR-3 cab controllers with fuel-saving cycle-sentry mode, automated pre-trip diagnostics, and TracKing GPS telematics (real-time temperature logging, door-ajar alarms, and cold-chain compliance).
-- Truck Sizing Rule: When a customer asks about a refrigerated truck, ask for their truck model/chassis (e.g., Isuzu NPR, FSR, SinoTruck, or semi-trailer), box length, and target temperature (chilled +2 °C to +8 °C vs. frozen -18 °C to -25 °C) so we can match the right insulated box thickness and Thermo King model.
-
-IMAGE & VOICE ANALYSIS RULE:
-- When a customer sends a photo, identify what is shown and give practical engineering thoughts on how Maru Metal Industry PLC can build, equip (with Thermo King for trucks/trailers, or our custom cold room refrigeration systems for stationary storage—never naming any cold room OEM brand), or repair it.
-- When a customer sends a voice message (in Amharic or English), listen carefully and reply naturally in the exact same language they spoke.
-
-RULES:
-- Reply in the exact language the customer uses (Amharic if they write or speak in Amharic, English if they write or speak in English).
-- SPEED & BREVITY RULE: Keep answers direct, warm, and concise (2 to 4 sentences max unless listing specs). Speak naturally like a knowledgeable colleague, not a scripted robot.
-- FORMATTING RULE: Never use Markdown asterisks (** or *), hashtags (#), or raw formatting symbols. Write in clean plain text using simple line breaks or numbered lists (1., 2., 3.).
-- Never invent specific prices, exact delivery timelines, or unverified specs.
-- LEAD & QUOTE COLLECTION RULE:
-  1. If a customer asks who they are talking to, who to contact, or asks for a phone number/email/human representative, output ONLY this exact tag: [SHOW_CONTACT]
-  2. Whenever a customer asks for a price quote, custom dimensions/specs, site inspection, or bulk order:
-     - Check the conversation history—if they haven't shared their Name, Phone Number, and brief Project/Vehicle details yet, politely ask for those three details so our engineering/sales team can prepare an accurate quotation.
-     - Once they provide their contact/project details, confirm that our Marketing Department will reach out shortly and include this exact hidden tag at the very end of your message: [ESCALATE_LEAD]`;
+MEDIA, FORMATTING & ESCALATION RULES:
+- Photos/Voice: Analyze photos practically; reply to voice notes naturally in the exact language spoken.
+- Keep replies concise (2 to 4 sentences max unless listing specs). Plain text only—NEVER use Markdown asterisks (** or *), hashtags (#), or raw symbols. Never invent prices or lead times.
+- If asked who they are talking to, who to contact, or for phone/email/human rep, output ONLY: [SHOW_CONTACT]
+- For quotes/custom specs/inspections: Ask for Name, Phone Number, and Project/Vehicle details if not yet provided. Once provided, confirm our Marketing Department will follow up shortly and end with: [ESCALATE_LEAD]`;
 
 const MAIN_MENU_KEYBOARD = {
   keyboard: [
@@ -124,7 +77,6 @@ const MAIN_MENU_KEYBOARD = {
   one_time_keyboard: false
 };
 
-// Automatically extracts phone numbers and emails shared by a customer
 function extractContactDetails(text) {
   const phones = text.match(/(?:\+251|0)?9\d{8}|\+?\d[\d\s-]{7,14}\d/g) || [];
   const emails = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || [];
@@ -134,10 +86,9 @@ function extractContactDetails(text) {
   };
 }
 
-// Saves full transcript and contact info per customer
 function recordCustomerLog(chatId, senderName, username, role, text) {
   const id = String(chatId);
-  if (OWNER_ID && id === OWNER_ID) return; // Don't log owner's own admin tests as customer leads
+  if (OWNER_ID && id === OWNER_ID) return;
 
   const existing = customerLogs.get(id) || {
     chatId: id,
@@ -165,14 +116,10 @@ function recordCustomerLog(chatId, senderName, username, role, text) {
   }
 
   existing.messages.push(`${role}: ${text}`);
-  if (existing.messages.length > 30) {
-    existing.messages.shift();
-  }
-
+  if (existing.messages.length > 30) existing.messages.shift();
   customerLogs.set(id, existing);
 }
 
-// Splits long transcripts into chunks under Telegram's 4096-character message limit
 async function sendLongTelegramMessage(chatId, fullText, replyMarkup = null) {
   const MAX_LEN = 3800;
   if (fullText.length <= MAX_LEN) {
@@ -274,7 +221,8 @@ function pcmToWavBuffer(pcmBuffer, sampleRate = 24000, numChannels = 1, bitsPerS
 }
 
 async function generateGeminiVoice(textToSpeak) {
-  const ttsModels = ['gemini-3.8-flash-tts', 'gemini-3.8-flash-lite-tts', 'gemini-2.5-flash-preview-tts'];
+  // Uses the fast lite TTS model first for rapid voice delivery
+  const ttsModels = ['gemini-3.8-flash-lite-tts', 'gemini-3.8-flash-tts', 'gemini-2.5-flash-preview-tts'];
   for (const modelName of ttsModels) {
     try {
       const response = await ai.models.generateContent({
@@ -326,7 +274,8 @@ async function askAssistant(chatId, userMessage, mediaPart = null, mediaLabel = 
   const conversationPrompt = getConversationContext(chatId, loggedText);
   const contents = mediaPart ? [conversationPrompt, mediaPart] : conversationPrompt;
 
-  const modelsToTry = ['gemini-3.8-flash', 'gemini-3.5-flash-lite'];
+  // Fast lite model first for ~1-2s latency, with 3.8-flash fallback
+  const modelsToTry = ['gemini-3.5-flash-lite', 'gemini-3.8-flash'];
   let lastError;
 
   for (const modelName of modelsToTry) {
@@ -336,8 +285,8 @@ async function askAssistant(chatId, userMessage, mediaPart = null, mediaLabel = 
         contents,
         config: {
           systemInstruction: SYSTEM_PROMPT,
-          temperature: 0.35,
-          maxOutputTokens: 450
+          temperature: 0.3,
+          maxOutputTokens: 350
         }
       });
       if (response.text) {
@@ -368,13 +317,10 @@ app.post('/webhook/telegram', async (req, res) => {
   const username = message.from?.username ? `@${message.from.username}` : 'No username';
 
   try {
-    // =========================================================================
-    // PRIVATE OWNER ADMIN COMMANDS (Only works for OWNER_TELEGRAM_ID)
-    // =========================================================================
+    // Private Owner Admin Commands
     if (isOwner && message.text) {
       const adminCmd = message.text.trim();
 
-      // View list of all customers and their contact details
       if (adminCmd === '/leads') {
         if (customerLogs.size === 0) {
           await sendTelegramMessage(chatId, 'No customer conversations recorded yet since the last server restart.');
@@ -402,7 +348,6 @@ app.post('/webhook/telegram', async (req, res) => {
         return;
       }
 
-      // View full conversation transcript with a specific customer (/chat_12345 or /chat 12345)
       if (adminCmd.startsWith('/chat')) {
         const targetId = adminCmd.replace('/chat_', '').replace('/chat', '').trim();
         const log = customerLogs.get(targetId);
@@ -428,7 +373,6 @@ app.post('/webhook/telegram', async (req, res) => {
         return;
       }
 
-      // Clear stored customer logs
       if (adminCmd === '/clearleads') {
         customerLogs.clear();
         await sendTelegramMessage(chatId, 'All stored customer conversation logs have been cleared.');
@@ -436,9 +380,7 @@ app.post('/webhook/telegram', async (req, res) => {
       }
     }
 
-    // =========================================================================
-    // 1. Handle Voice / Audio messages
-    // =========================================================================
+    // 1. Handle Voice / Audio messages (sends text immediately, then voice note right after)
     if (message.voice || message.audio) {
       sendChatAction(chatId, 'record_voice').catch(() => {});
       const audioObj = message.voice || message.audio;
@@ -478,19 +420,19 @@ app.post('/webhook/telegram', async (req, res) => {
         recordCustomerLog(chatId, senderName, username, 'Assistant', reply);
       }
 
+      // Send text right away so there's zero perceived lag, then send voice note
+      await sendTelegramMessage(chatId, reply, MAIN_MENU_KEYBOARD);
+      sendChatAction(chatId, 'record_voice').catch(() => {});
       const voiceAudio = await generateGeminiVoice(reply);
       if (voiceAudio) {
         await sendTelegramVoice(chatId, voiceAudio.buffer, voiceAudio.mimeType);
       }
-      await sendTelegramMessage(chatId, reply, MAIN_MENU_KEYBOARD);
       return;
     }
 
     sendChatAction(chatId, 'typing').catch(() => {});
 
-    // =========================================================================
     // 2. Handle Photo messages
-    // =========================================================================
     if (message.photo && message.photo.length > 0) {
       const bestPhoto = message.photo[message.photo.length - 1];
       const caption = (message.caption || 'Please analyze this photo and let me know what Maru Metal Industry PLC can do for this.').trim();
@@ -529,9 +471,7 @@ app.post('/webhook/telegram', async (req, res) => {
       return;
     }
 
-    // =========================================================================
     // 3. Handle Text messages
-    // =========================================================================
     const text = message.text.trim();
     recordCustomerLog(chatId, senderName, username, 'Customer', text);
 
@@ -539,4 +479,67 @@ app.post('/webhook/telegram', async (req, res) => {
       chatHistory.delete(chatId);
       const welcomeMsg =
         'ሰላም! እንኳን ወደ ማሩ ሜታል ኢንዱስትሪ ኃ.የተ.የግ.ማ (Maru Metal Industry PLC) በደህና መጡ። ከ1967 ዓ.ም ጀምሮ ለ50 ዓመታት በጥራት ስናገለግል ቆይተናል።\n\n' +
-        'Welcome to Maru Metal Industry PLC — celebrating 50 years of precision
+        'Welcome to Maru Metal Industry PLC — celebrating 50 years of precision engineering in Ethiopia! Choose a topic below, chat with me anytime, send a voice note, or share a photo in Amharic or English:';
+      saveBotReply(chatId, welcomeMsg);
+      recordCustomerLog(chatId, senderName, username, 'Assistant', welcomeMsg);
+      await sendTelegramMessage(chatId, welcomeMsg, MAIN_MENU_KEYBOARD);
+      return;
+    }
+
+    if (text === '📍 Location & Contact') {
+      const contactMsg =
+        'Maru Metal Industry PLC — Addis Ababa, Ethiopia\n\n' +
+        'Marketing Contact: Luya Abebe (Marketing Department)\n' +
+        'Direct Phone: +251 911 858 889\n' +
+        'Direct Email: luyaabebe@maruplc.com\n\n' +
+        'Address: Woreda 05, Akaki/Kality Subcity (Facilities in Akaki/Kality & Kera)\n' +
+        'Working Hours: 09:00 AM – 05:00 PM\n' +
+        'Office Lines: +251 11 437 59 73 | +251 11 439 82 54 | +251 11 462 43 10 | +251 99 359 79 28\n' +
+        'General Email: info@maruplc.com\n' +
+        'Website: www.maruplc.com';
+      recordCustomerLog(chatId, senderName, username, 'Assistant', contactMsg);
+      await sendTelegramMessage(chatId, contactMsg, MAIN_MENU_KEYBOARD);
+      return;
+    }
+
+    let reply = await askAssistant(chatId, text);
+
+    if (reply.includes('[SHOW_CONTACT]')) {
+      reply = reply.replace('[SHOW_CONTACT]', MARKETING_CONTACT_CARD).trim();
+    }
+
+    if (reply.includes('[ESCALATE_LEAD]')) {
+      reply = `${reply.replace('[ESCALATE_LEAD]', '').trim()}\n\n${MARKETING_CONTACT_CARD}`;
+      recordCustomerLog(chatId, senderName, username, 'Assistant', reply);
+      const log = customerLogs.get(String(chatId));
+      if (log) log.escalated = true;
+
+      if (OWNER_ID) {
+        const phoneStr = log?.phones?.length ? log.phones.join(', ') : 'Check transcript';
+        const fullTranscript = log ? log.messages.join('\n') : text;
+        const alertText =
+          `🚨 Maru Metal — New Customer Lead\n\n` +
+          `👤 Customer: ${senderName} (${username})\n` +
+          `🆔 Chat ID: ${chatId}\n` +
+          `📞 Detected Phone: ${phoneStr}\n\n` +
+          `💬 Full Conversation:\n${fullTranscript}`;
+        await sendLongTelegramMessage(OWNER_ID, alertText);
+      }
+    } else {
+      recordCustomerLog(chatId, senderName, username, 'Assistant', reply);
+    }
+
+    await sendTelegramMessage(chatId, reply, MAIN_MENU_KEYBOARD);
+  } catch (err) {
+    console.error('Webhook processing error:', err);
+    await sendTelegramMessage(
+      chatId,
+      'ይቅርታ፣ ሲስተሙ ላይ ትንሽ መቆራረጥ አጋጥሟል። እባክዎ ትንሽ ቆይተው እንደገና ይሞክሩ።\n\nSorry, there was a temporary connection issue. Please try again shortly.'
+    );
+  }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log('Maru Metal Industry PLC Assistant Server Live');
+});
